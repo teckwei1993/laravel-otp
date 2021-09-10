@@ -54,10 +54,9 @@ return [
     'repeated' => true,
 
 	/*
-     * The prefix/tag of the cache key to be used to store
+     * The prefix of the cache key to be used to store
      */
 
-    'cache_prefix' => 'OTPPX_',
-    'cache_tag' => 'otptag'
+    'cache_prefix' => 'OTPPX_'
 
 ];
