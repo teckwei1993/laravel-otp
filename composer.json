@@ -1,0 +1,39 @@
+{
+    "name": "teckwei1993/laravel-otp",
+    "description": "Laravel OTP generator and validation",
+    "homepage": "https://github.com/teckwei1993/laravel-otp",
+    "keywords": [
+        "laravel",
+        "otp",
+        "one time passwords",
+        "one time pin",
+        "email validation",
+        "mobile validation"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lim Teck Wei",
+            "email": "teckwei1993@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Teckwei1993\\Otp\\OtpServiceProvider"
+            ],
+            "aliases": {
+                "Otp": "Teckwei1993\\Otp\\OtpFacade"
+            }
+        }
+    },
+    "require": {
+        "php": "^7.3|^8.0",
+        "illuminate/support": "^6.0|^7.0|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Teckwei1993\\Otp\\": "src"
+        }
+    }
+}
