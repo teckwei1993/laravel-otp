@@ -10,6 +10,7 @@ return [
      * Here are the options:
      *  - string
      *  - numeric
+     *  - numeric-no-zero
      *  - customize
      */
 

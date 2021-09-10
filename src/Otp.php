@@ -111,6 +111,7 @@ class Otp
              $formats = [
                 'string' => config('otp.sensitive') ? '23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ' : '23456789ABCDEFGHJKLMNPQRSTUVWXYZ',
                 'numeric' => '0123456789',
+                'numeric-no-zero' => '123456789',
                 'customize' => $this->customize
             ];
 

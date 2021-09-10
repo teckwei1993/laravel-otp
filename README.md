@@ -148,7 +148,7 @@ $code = Otp::setLength(8)->setFormat('string')->setExpires(60)->setRepeated(fals
 ```
 
 * `setLength($length)`: The length of the password.
-* `setFormat($format)`: The format option allows you to decide which generator implementation to be used when generating new passwords. Options: 'string','numeric','customize'
+* `setFormat($format)`: The format option allows you to decide which generator implementation to be used when generating new passwords. Options: 'string','numeric','numeric-no-zero','customize'
 * `setExpires($minutes)`: The expiry time of the password in minutes.
 * `setRepeated($boolean)`: The repeated of the password. The previous password is valid when new password generated until either one password used or itself expired
 
