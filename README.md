@@ -105,7 +105,7 @@ public function rules()
     ];
 }
 
-// in controller
+// in a controller
 
 $request->validate([
     'code' => ['required', new OtpValidate('change-email:name@domain.com')]
@@ -130,7 +130,7 @@ public function rules()
     ];
 }
 
-// in controller request validate
+// in a controller
 
 $request->validate([
     'code' => ['required', new OtpValidate()]
@@ -146,7 +146,7 @@ $request->validate([
 ```php
 $code = Otp::setLength(8)->setFormat('string')->setExpires(60)->setRepeated(false)->generate('identifier-key-here');
 
-// or
+// or array option
 
 $code = Otp::generate('identifier-key-here', [
     'length' => 8,
@@ -186,7 +186,7 @@ $code = Otp::setSensitive(true)->generate('identifier-key-here');
 
 $result = Otp::setSensitive(true)->validate('identifier-key-here', $code);
 
-// in controller request validate
+// in controller
 
 use Teckwei1993\Otp\Rules\OtpValidate;
 
@@ -200,15 +200,16 @@ $request->validate([
 ### Generate OTP with seperate password
 
 ```php
-$code = Otp::setLength([4,3,4])->generate('identifier-key-here');
+$code = Otp::setLength([4,3,4])->setSeparator(':')->generate('identifier-key-here');
 ```
 **OTP Sample**
 
 ```text
-3526-126-3697
+3526:126:3697
 ```
 
 * `setLength($array)`: The length of the password, use array to separate each length.
+* `setSeparator($string)`: The separator of the password. Default: "-"
 
 ### Validate OTP with extra data
 
