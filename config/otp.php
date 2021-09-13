@@ -28,6 +28,12 @@ return [
 
 	'length' => env('OTP_LENGTH', 6),
 
+    /*
+     * The separator of the password.
+     */
+
+    'separator' => '-',
+
 	/*
      * Requiring correct input of uppercase and lowercase letters
      */
