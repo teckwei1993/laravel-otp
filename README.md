@@ -197,6 +197,19 @@ $request->validate([
 
 * `setSensitive($boolean)`: Requiring correct input of uppercase and lowercase letters
 
+### Generate OTP with seperate password
+
+```php
+$code = Otp::setLength([4,3,4])->generate('identifier-key-here');
+```
+**OTP Sample**
+
+```text
+3526-126-3697
+```
+
+* `setLength($array)`: The length of the password, use array to separate each length.
+
 ### Validate OTP with extra data
 
 ```php
