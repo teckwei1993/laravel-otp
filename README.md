@@ -145,6 +145,15 @@ $request->validate([
 
 ```php
 $code = Otp::setLength(8)->setFormat('string')->setExpires(60)->setRepeated(false)->generate('identifier-key-here');
+
+// or
+
+$code = Otp::generate('identifier-key-here', [
+    'length' => 8,
+    'format' => 'string',
+    'expires' => 60,
+    'repeated' => false
+]);
 ```
 
 * `setLength($length)`: The length of the password.
@@ -152,7 +161,7 @@ $code = Otp::setLength(8)->setFormat('string')->setExpires(60)->setRepeated(fals
 * `setExpires($minutes)`: The expiry time of the password in minutes.
 * `setRepeated($boolean)`: The repeated of the password. The previous password is valid when new password generated until either one password used or itself expired
 
-### Generate OTP with customize
+### Generate OTP with customize password
 
 ```php
 $code = Otp::setCustomize('12345678ABC@#$')->generate('identifier-key-here');
@@ -160,7 +169,7 @@ $code = Otp::setCustomize('12345678ABC@#$')->generate('identifier-key-here');
 
 * `setCustomize($string)`: Random letter from the customize string
 
-### Validate OTP with option
+### Validate OTP with specific attempt times
 
 ```php
 $code = Otp::setAttempts(3)->validate('identifier-key-here', 'password-here');
@@ -168,6 +177,53 @@ $code = Otp::setAttempts(3)->validate('identifier-key-here', 'password-here');
 
 * `setAttempts($times)`: The number of incorrect password attempts
 
+### Validate OTP with case sensitive
+
+```php
+$code = Otp::setSensitive(true)->generate('identifier-key-here');
+
+// validate
+
+$result = Otp::setSensitive(true)->validate('identifier-key-here', $code);
+
+// in controller request validate
+
+use Teckwei1993\Otp\Rules\OtpValidate;
+
+$request->validate([
+    'code' => ['required', new OtpValidate('identifier-key-here', ['sensitive' => true])]
+]);
+```
+
+* `setSensitive($boolean)`: Requiring correct input of uppercase and lowercase letters
+
+### Validate OTP with extra data
+
+```php
+$code = Otp::setData(['user_id' => auth()->id()])->generate('login-confirmation');
+
+// validate
+
+$result = Otp::validate('login-confirmation', $code);
+```
+
+**On Success Response**
+
+```object
+{
+  "status": true,
+  "data": [
+    "user_id": 10
+  ]
+}
+```
+
+* `setData($var)`: Allows you to get the extra data of OTP
+
 ## Contribution
 
 All contributions are welcome! 😄
+
+## License
+
+The MIT License (MIT).
