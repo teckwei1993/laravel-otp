@@ -265,6 +265,7 @@ $request->validate([
 ```
 
 * `setSkip($boolean)`: Skip using the password when validate, which means you can reuse the password again. Default: false
+* When there is an error response to the form request, it will skip using the password, but remember to `OTP::validate(...)`  in controller.
 
 ### Delete OTP
 
