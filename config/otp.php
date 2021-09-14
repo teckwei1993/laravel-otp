@@ -60,10 +60,17 @@ return [
 
     'repeated' => true,
 
+    /*
+     * The disposable of the Otp identifier
+     * The different password is not valid when same identifier password used
+     */
+
+    'disposable' => true,
+
 	/*
      * The prefix of the cache key to be used to store
      */
 
-    'cache_prefix' => 'OTPPX_'
+    'prefix' => 'OTPPX_'
 
 ];

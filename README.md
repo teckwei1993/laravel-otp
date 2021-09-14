@@ -141,7 +141,7 @@ $request->validate([
 
 ## Advanced Usage
 
-### Generate OTP with option
+### Generate OTP with options
 
 ```php
 $code = Otp::setLength(8)->setFormat('string')->setExpires(60)->setRepeated(false)->generate('identifier-key-here');
@@ -156,10 +156,10 @@ $code = Otp::generate('identifier-key-here', [
 ]);
 ```
 
-* `setLength($length)`: The length of the password.
-* `setFormat($format)`: The format option allows you to decide which generator implementation to be used when generating new passwords. Options: 'string','numeric','numeric-no-zero','customize'
-* `setExpires($minutes)`: The expiry time of the password in minutes.
-* `setRepeated($boolean)`: The repeated of the password. The previous password is valid when new password generated until either one password used or itself expired
+* `setLength($length)`: The length of the password. Default: 6
+* `setFormat($format)`: The format option allows you to decide which generator implementation to be used when generating new passwords. Options: 'string','numeric','numeric-no-zero','customize'. Default: "numeric"
+* `setExpires($minutes)`: The expiry time of the password in minutes. Default: 15
+* `setRepeated($boolean)`: The repeated of the password. The previous password is valid when new password generated until either one password used or itself expired. Default: true
 
 ### Generate OTP with customize password
 
@@ -175,7 +175,7 @@ $code = Otp::setCustomize('12345678ABC@#$')->generate('identifier-key-here');
 $code = Otp::setAttempts(3)->validate('identifier-key-here', 'password-here');
 ```
 
-* `setAttempts($times)`: The number of incorrect password attempts
+* `setAttempts($times)`: The number of incorrect password attempts. Default: 5
 
 ### Validate OTP with case sensitive
 
@@ -195,14 +195,14 @@ $request->validate([
 ]);
 ```
 
-* `setSensitive($boolean)`: Requiring correct input of uppercase and lowercase letters
+* `setSensitive($boolean)`: Requiring correct input of uppercase and lowercase letters. Default: true
 
 ### Generate OTP with seperate password
 
 ```php
 $code = Otp::setLength([4,3,4])->setSeparator(':')->generate('identifier-key-here');
 ```
-**OTP Sample**
+**Sample password**
 
 ```text
 3526:126:3697
@@ -215,11 +215,25 @@ $code = Otp::setLength([4,3,4])->setSeparator(':')->generate('identifier-key-her
 
 ```php
 $code = Otp::setData(['user_id' => auth()->id()])->generate('login-confirmation');
+```
 
+* `setData($var)`: Allows you to get the extra data of OTP.
+
+```php
 // validate
 
-$result = Otp::validate('login-confirmation', $code);
+$result = Otp::setDisposable(false)->validate('login-confirmation', $code);
+
+// in controller
+
+use Teckwei1993\Otp\Rules\OtpValidate;
+
+$request->validate([
+    'code' => ['required', new OtpValidate('login-confirmation', ['disposable' => false])]
+]);
 ```
+
+* `setDisposable($boolean)`: The disposable of the Otp identifier, the different password is not valid when same identifier password used. Default: true
 
 **On Success Response**
 
@@ -232,7 +246,45 @@ $result = Otp::validate('login-confirmation', $code);
 }
 ```
 
-* `setData($var)`: Allows you to get the extra data of OTP
+* When you set disposable to `false`, you are able support different password with different extra data for different user in the same identifier key of the OTP.
+
+### Validate OTP with skip using
+
+```php
+// validate
+
+$result = Otp::setSkip(true)->validate('identifier-key-here', $code);
+
+// in controller
+
+use Teckwei1993\Otp\Rules\OtpValidate;
+
+$request->validate([
+    'code' => ['required', new OtpValidate('identifier-key-here', ['skip' => false])]
+]);
+```
+
+* `setSkip($boolean)`: Skip using the password when validate, which means you can reuse the password again. Default: false
+
+### Delete OTP
+
+```php
+Otp::forget('identifier-key-here');
+```
+
+* Delete all password with this specific identifier
+
+### Delete specific password
+
+```php
+Otp::forget('identifier-key-here', 'password-here');
+```
+
+### Reset attempt times
+
+```php
+Otp::resetAttempt('identifier-key-here');
+```
 
 ## Contribution
 

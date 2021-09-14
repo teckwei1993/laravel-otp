@@ -8,20 +8,23 @@ use Illuminate\Support\Str;
 
 class Otp
 {
-    private $format;
+    private $format = 'numeric';
     private $customize;
-    private $length;
-    private $separator;
-    private $expires;
-    private $attempts;
-    private $repeated;
-    private $sensitive;
+    private $length = 6;
+    private $separator = '-';
+    private $sensitive = false;
+    private $expires = 15;
+    private $attempts = 5;
+    private $repeated = true;
+    private $disposable = true;
+    private $prefix = 'OTPPX_';
     private $data;
+    private $skip = false;
 
     public function __construct()
     {
-        foreach(['format','customize','length','separator','expires','attempts','repeated','sensitive','data'] as $value){
-            $this->{$value} = config('otp.'.$value);
+        foreach(['format','customize','length','separator','sensitive','expires','attempts','repeated','disposable','prefix','data'] as $value){
+            if(!empty(config('otp.'.$value))) $this->{$value} = config('otp.'.$value);
         }
     }
 
@@ -45,25 +48,25 @@ class Otp
 
     public function generate(string $identifier = null, array $options = []): string
     {
-        if(!empty($options)) foreach(['format','customize','length','separator','expires','repeated','sensitive','data'] as $value){
+        if(!empty($options)) foreach(['format','customize','length','separator','sensitive','expires','repeated','prefix','data'] as $value){
             if(isset($options[$value])) $this->{$value} = $options[$value];
         }
 
         if($identifier === null) $identifier = session()->getId();
-        $array = $this->repeated ? $this->readData(config('otp.cache_prefix').$identifier, []) : [];
+        $array = $this->repeated ? $this->readData($identifier, []) : [];
         $password = $this->generateNewPassword();
         if(!$this->sensitive) $password = strtoupper($password);
         $array[md5($password)] = [
             'expires' => time()+$this->expires*60,
             'data' => $this->data
         ];
-        $this->writeData(config('otp.cache_prefix').$identifier, $array, $this->expires*60);
+        $this->writeData($identifier, $array);
         return $password;
     }
 
     public function validate(string $identifier = null, string $password = null, array $options = []): object
     {
-        if(!empty($options)) foreach(['attempts','sensitive'] as $value){
+        if(!empty($options)) foreach(['attempts','sensitive','disposable','skip'] as $value){
             if(isset($options[$value])) $this->{$value} = $options[$value];
         }
 
@@ -76,7 +79,7 @@ class Otp
         }
 
         if($identifier === null) $identifier = session()->getId();
-        $attempt = $this->readData(config('otp.cache_prefix').'_attempt_'.$identifier, 0);
+        $attempt = $this->readData('_attempt_'.$identifier, 0);
         if($attempt >= $this->attempts){
             return (object) [
                 'status' => false,
@@ -84,11 +87,11 @@ class Otp
             ];
         }
 
-        $codes = $this->readData(config('otp.cache_prefix').$identifier, []);
+        $codes = $this->readData($identifier, []);
         if(!$this->sensitive) $password = strtoupper($password);
 
         if(!isset($codes[md5($password)])){
-            $this->writeData(config('otp.cache_prefix').'_attempt_'.$identifier, $attempt+1);
+            $this->writeData('_attempt_'.$identifier, $attempt+1);
             return (object) [
                 'status' => false,
                 'error' => 'invalid',
@@ -96,25 +99,48 @@ class Otp
         }
 
         if(time() > $codes[md5($password)]['expires']){
-            $this->writeData(config('otp.cache_prefix').'_attempt_'.$identifier, $attempt+1);
+            $this->writeData('_attempt_'.$identifier, $attempt+1);
             return (object) [
                 'status' => false,
                 'error' => 'expired',
             ];
         }
 
-        $this->forget($identifier);
-        return (object) [
+        $response = [
             'status' => true,
-            'data' => $codes[md5($password)]['data']
         ];
+
+        if(!empty($codes[md5($password)]['data'])){
+            $response['data'] = $codes[md5($password)]['data'];
+        }
+
+        if(!$this->skip) $this->forget($identifier, !$this->disposable ? $password : null);
+        $this->resetAttempt($identifier);
+
+        return (object) $response;
     }
 
-    public function forget(string $identifier = null)
+    public function forget(string $identifier = null, string $password = null)
     {
         if($identifier === null) $identifier = session()->getId();
-        $this->deleteData(config('otp.cache_prefix').$identifier);
-        $this->deleteData(config('otp.cache_prefix').'_attempt_'.$identifier);
+        if($password !== null){
+            $codes = $this->readData($identifier, []);
+            if(!isset($codes[md5($password)])){
+                return false;
+            }
+            unset($codes[md5($password)]);
+            $this->writeData($identifier, $codes);
+            return true;
+        }
+
+        $this->deleteData($identifier);
+        return true;
+    }
+
+    public function resetAttempt(string $identifier = null)
+    {
+        if($identifier === null) $identifier = session()->getId();
+        $this->deleteData('_attempt_'.$identifier);
         return true;
     }
 
@@ -143,16 +169,16 @@ class Otp
 
     private function writeData(string $key, $value)
     {
-        return Cache::put($key, $value, $this->expires*60*3);
+        return Cache::put($this->prefix.$key, $value, $this->expires*60*3);
     }
 
     private function readData(string $key, $default = null)
     {
-        return Cache::get($key, $default);
+        return Cache::get($this->prefix.$key, $default);
     }
 
     private function deleteData(string $key)
     {
-        return Cache::forget($key);
+        return Cache::forget($this->prefix.$key);
     }
 }
