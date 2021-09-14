@@ -32,7 +32,7 @@ Otp::generate(string $identifier)
 #### Sample
 
 ```php
-$code = Otp::generate('reg:name@domain.com');
+$password = Otp::generate('reg:name@domain.com');
 ```
 
 This will generate a OTP that will be valid for 15 minutes.
@@ -144,11 +144,11 @@ $request->validate([
 ### Generate OTP with options
 
 ```php
-$code = Otp::setLength(8)->setFormat('string')->setExpires(60)->setRepeated(false)->generate('identifier-key-here');
+$password = Otp::setLength(8)->setFormat('string')->setExpires(60)->setRepeated(false)->generate('identifier-key-here');
 
 // or array option
 
-$code = Otp::generate('identifier-key-here', [
+$password = Otp::generate('identifier-key-here', [
     'length' => 8,
     'format' => 'string',
     'expires' => 60,
@@ -164,7 +164,7 @@ $code = Otp::generate('identifier-key-here', [
 ### Generate OTP with customize password
 
 ```php
-$code = Otp::setCustomize('12345678ABC@#$')->generate('identifier-key-here');
+$password = Otp::setCustomize('12345678ABC@#$')->generate('identifier-key-here');
 ```
 
 * `setCustomize($string)`: Random letter from the customize string
@@ -172,7 +172,7 @@ $code = Otp::setCustomize('12345678ABC@#$')->generate('identifier-key-here');
 ### Validate OTP with specific attempt times
 
 ```php
-$code = Otp::setAttempts(3)->validate('identifier-key-here', 'password-here');
+$password = Otp::setAttempts(3)->validate('identifier-key-here', 'password-here');
 ```
 
 * `setAttempts($times)`: The number of incorrect password attempts. Default: 5
@@ -180,11 +180,11 @@ $code = Otp::setAttempts(3)->validate('identifier-key-here', 'password-here');
 ### Validate OTP with case sensitive
 
 ```php
-$code = Otp::setSensitive(true)->generate('identifier-key-here');
+$password = Otp::setSensitive(true)->generate('identifier-key-here');
 
 // validate
 
-$result = Otp::setSensitive(true)->validate('identifier-key-here', $code);
+$result = Otp::setSensitive(true)->validate('identifier-key-here', 'password-here');
 
 // in controller
 
@@ -200,7 +200,7 @@ $request->validate([
 ### Generate OTP with seperate password
 
 ```php
-$code = Otp::setLength([4,3,4])->setSeparator(':')->generate('identifier-key-here');
+$password = Otp::setLength([4,3,4])->setSeparator(':')->generate('identifier-key-here');
 ```
 **Sample password**
 
@@ -214,7 +214,7 @@ $code = Otp::setLength([4,3,4])->setSeparator(':')->generate('identifier-key-her
 ### Validate OTP with extra data
 
 ```php
-$code = Otp::setData(['user_id' => auth()->id()])->generate('login-confirmation');
+$password = Otp::setData(['user_id' => auth()->id()])->generate('login-confirmation');
 ```
 
 * `setData($var)`: Allows you to get the extra data of OTP.
@@ -222,7 +222,7 @@ $code = Otp::setData(['user_id' => auth()->id()])->generate('login-confirmation'
 ```php
 // validate
 
-$result = Otp::setDisposable(false)->validate('login-confirmation', $code);
+$result = Otp::setDisposable(false)->validate('login-confirmation', 'password-here');
 
 // in controller
 
@@ -253,14 +253,14 @@ $request->validate([
 ```php
 // validate
 
-$result = Otp::setSkip(true)->validate('identifier-key-here', $code);
+$result = Otp::setSkip(true)->validate('identifier-key-here', 'password-here');
 
 // in controller
 
 use Teckwei1993\Otp\Rules\OtpValidate;
 
 $request->validate([
-    'code' => ['required', new OtpValidate('identifier-key-here', ['skip' => false])]
+    'code' => ['required', new OtpValidate('identifier-key-here', ['skip' => true])]
 ]);
 ```
 
