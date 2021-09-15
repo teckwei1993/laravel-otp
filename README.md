@@ -17,12 +17,6 @@ The cache connection same as your laravel cache config and it supported: "apc", 
 composer require teckwei1993/laravel-otp
 ```
 
-### Publish config and language file
-
-```bash
-php artisan vendor:publish --provider="Teckwei1993\Otp\OtpServiceProvider"
-```
-
 ### Add Service Provider & Facade
 
 **For Laravel 5.5+**
@@ -44,6 +38,12 @@ Add the Facade to the aliases array in `config/app.php`:
 ```
 
 ## Configuration
+
+Publish config and language file
+
+```bash
+php artisan vendor:publish --provider="Teckwei1993\Otp\OtpServiceProvider"
+```
 
 This package publishes an `otp.php` file inside your applications's config folder which contains the settings for this package. Most of the variables are bound to environment variables, you may add Key-Value pair to the `.env` file in the Laravel application.
 
