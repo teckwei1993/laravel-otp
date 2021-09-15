@@ -1,5 +1,9 @@
 # Laravel OTP
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/teckwei1993/laravel-otp.svg?style=flat-square)](https://packagist.org/packages/teckwei1993/laravel-otp)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://packagist.org/packages/teckwei1993/laravel-otp)
+[![Total Downloads](https://img.shields.io/packagist/dt/teckwei1993/laravel-otp.svg?style=flat-square)](https://packagist.org/packages/teckwei1993/laravel-otp)
+
 ## Introduction
 
 A package for Laravel One Time Password (OTP) generator and validation without Eloquent Model, since it done by *Cache*.
