@@ -7,16 +7,50 @@ The cache connection same as your laravel cache config and it supported: "apc", 
 
 ## Installation
 
-Install via composer
+### Install via composer
 
 ```bash
 composer require teckwei1993/laravel-otp
 ```
 
-Publish config and language file
+### Publish config and language file
 
 ```bash
 php artisan vendor:publish --provider="Teckwei1993\Otp\OtpServiceProvider"
+```
+
+### Add Service Provider & Facade
+
+**For Laravel 5.5+**
+
+Once the package is added, the service provider and facade will be auto discovered.
+
+**For Older versions of Laravel**
+
+Add the ServiceProvider to the providers array in `config/app.php`:
+
+```php
+Teckwei1993\Otp\OtpServiceProvider::class
+```
+
+Add the Facade to the aliases array in `config/app.php`:
+
+```php
+'Otp' => Teckwei1993\Otp\OtpFacade::class
+```
+
+## Configuration
+
+This package publishes an `otp.php` file inside your applications's config folder which contains the settings for this package. Most of the variables are bound to environment variables, you may add Key-Value pair to the `.env` file in the Laravel application.
+
+```
+OTP_FORMAT=numeric
+OTP_LENGTH=6
+OTP_SENSITIVE=false
+OTP_EXPIRES_TIME=15
+OTP_ATTEMPT_TIMES=5
+OTP_REPEATED=true
+OTP_DEMO=false
 ```
 
 ## Usage
@@ -32,6 +66,10 @@ Otp::generate(string $identifier)
 #### Sample
 
 ```php
+use OTP;
+
+// in controller
+
 $password = Otp::generate('reg:name@domain.com');
 ```
 
@@ -49,6 +87,10 @@ Otp::validate(string $identifier, string $password)
 #### Sample
 
 ```php
+use OTP;
+
+// in controller
+
 $result = Otp::validate('reg:name@domain.com', '123456');
 ```
 
@@ -204,7 +246,7 @@ $password = Otp::setLength([4,3,4])->setSeparator(':')->generate('identifier-key
 ```
 **Sample password**
 
-```text
+```
 3526:126:3697
 ```
 
@@ -286,6 +328,17 @@ Otp::forget('identifier-key-here', 'password-here');
 ```php
 Otp::resetAttempt('identifier-key-here');
 ```
+
+### Demo password
+
+Add the following Key-Value pair to the `.env` file in the Laravel application.
+
+```
+OTP_DEMO=true
+```
+
+* Demo mode for development purposes, no need to use real password to validate.
+* Default demo password: "1234", "123456", "12345678"
 
 ## Contribution
 

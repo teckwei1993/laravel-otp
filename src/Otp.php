@@ -20,10 +20,12 @@ class Otp
     private $prefix = 'OTPPX_';
     private $data;
     private $skip = false;
+    private $demo = false;
+    private $demo_passwords = ['1234','123456','12345678'];
 
     public function __construct()
     {
-        foreach(['format','customize','length','separator','sensitive','expires','attempts','repeated','disposable','prefix','data'] as $value){
+        foreach(['format','customize','length','separator','sensitive','expires','attempts','repeated','disposable','prefix','data','demo','demo_passwords'] as $value){
             if(!empty(config('otp.'.$value))) $this->{$value} = config('otp.'.$value);
         }
     }
@@ -76,6 +78,13 @@ class Otp
             }
             $password = $identifier;
             $identifier = null;
+        }
+
+        if($this->demo && in_array($password,$this->demo_passwords)){
+            return (object) [
+                'status' => true,
+                'demo' => true
+            ];
         }
 
         if($identifier === null) $identifier = session()->getId();
