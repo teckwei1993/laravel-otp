@@ -38,7 +38,7 @@ return [
      * Requiring correct input of uppercase and lowercase letters.
      */
 
-	'sensitive' => false,
+	'sensitive' => env('OTP_SENSITIVE', false),
 
 	/*
      * The expiry time of the password in minutes.
@@ -58,7 +58,7 @@ return [
      * until either one password used or itself expired.
      */
 
-    'repeated' => true,
+    'repeated' => env('OTP_REPEATED', true),
 
     /*
      * The disposable of the Otp identifier.
