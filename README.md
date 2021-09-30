@@ -23,7 +23,7 @@ composer require teckwei1993/laravel-otp
 
 Once the package is added, the service provider and facade will be auto discovered.
 
-**For Older versions of Laravel**
+**For Laravel 5.2 / 5.3 / 5.4**
 
 Add the ServiceProvider to the providers array in `config/app.php`:
 
