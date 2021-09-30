@@ -178,7 +178,11 @@ class Otp
 
     private function writeData(string $key, $value)
     {
-        return Cache::put($this->prefix.$key, $value, $this->expires*60*3);
+        $expires = $this->expires;
+        if(app()->version() >= "5.8"){
+            $expires *= 60;
+        }
+        return Cache::put($this->prefix.$key, $value, $expires*3);
     }
 
     private function readData(string $key, $default = null)
