@@ -90,7 +90,7 @@ class Otp
 
             return implode($this->separator, $password);
         } catch (Exception $e) {
-            throw new Exception('Fail to generate password, please check the format is correct.');
+            throw new Exception('Failed to generate password, ensure the format is correct.');
         }
     }
 
@@ -111,7 +111,7 @@ class Otp
 
         if ($password === null) {
             if ($identifier === null) {
-                throw new Exception('Validate parameter can not be null');
+                throw new Exception('Validate parameter is required');
             }
             $password = $identifier;
             $identifier = null;
