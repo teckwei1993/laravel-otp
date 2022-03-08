@@ -2,7 +2,7 @@
 
 return [
 
-	/*
+    /*
      * The format option allows you to decide
      * which generator implementation to be used when
      * generating new passwords.
@@ -22,11 +22,11 @@ return [
 
     'customize' => '123456789ABCDEFG@#$%',
 
-	/*
+    /*
      * The length of the password.
      */
 
-	'length' => env('OTP_LENGTH', 6),
+    'length' => env('OTP_LENGTH', 6),
 
     /*
      * The separator of the password.
@@ -34,13 +34,13 @@ return [
 
     'separator' => '-',
 
-	/*
+    /*
      * Requiring correct input of uppercase and lowercase letters.
      */
 
-	'sensitive' => env('OTP_SENSITIVE', false),
+    'sensitive' => env('OTP_SENSITIVE', false),
 
-	/*
+    /*
      * The expiry time of the password in minutes.
      */
 
@@ -52,7 +52,7 @@ return [
 
     'attempts' => env('OTP_ATTEMPT_TIMES', 5),
 
-	/*
+    /*
      * The repeated of the password.
      * The previous password is valid when new password generated
      * until either one password used or itself expired.
@@ -67,7 +67,7 @@ return [
 
     'disposable' => true,
 
-	/*
+    /*
      * The prefix of the cache key to be used to store.
      */
 
@@ -78,6 +78,6 @@ return [
      */
 
     'demo' => env('OTP_DEMO', false),
-    'demo_passwords' => ['1234','123456','12345678']
+    'demo_passwords' => ['1234', '123456', '12345678']
 
 ];

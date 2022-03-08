@@ -21,7 +21,7 @@ class OtpValidate implements Rule
     public function passes($attribute, $value): bool
     {
         $result = Otp::validate($this->identifier, $value, $this->options);
-        if($result->status !== true){
+        if ($result->status !== true) {
             $this->attribute = $attribute;
             $this->error = $result->error;
             return false;
@@ -32,7 +32,7 @@ class OtpValidate implements Rule
 
     public function message(): string
     {
-        return __('otp::messages.'.$this->error, [
+        return __('otp::messages.' . $this->error, [
             'attribute' => $this->attribute
         ]);
     }
