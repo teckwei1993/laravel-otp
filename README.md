@@ -6,8 +6,8 @@
 
 ## Introduction
 
-A package for Laravel One Time Password (OTP) generator and validation without Eloquent Model, since it done by *Cache*.
-The cache connection same as your laravel cache config and it supported: "apc", "array", "database", "file", "memcached", "redis"
+A package for Laravel One Time Password (OTP) generation and validation without using an Eloquent Model, since it's done by *Cache*.
+The cache connection is the same as your laravel cache configuration, and it supports: "apc", "array", "database", "file", "memcached", "redis"
 
 ## Installation
 
@@ -25,13 +25,13 @@ Once the package is added, the service provider and facade will be auto discover
 
 **For Laravel 5.2 / 5.3 / 5.4**
 
-Add the ServiceProvider to the providers array in `config/app.php`:
+Add the `OtpServiceProvider` to the providers array in `config/app.php`:
 
 ```php
 Teckwei1993\Otp\OtpServiceProvider::class
 ```
 
-Add the Facade to the aliases array in `config/app.php`:
+Add the `OtpFacade` to the aliases array in `config/app.php`:
 
 ```php
 'Otp' => Teckwei1993\Otp\OtpFacade::class
@@ -45,9 +45,13 @@ Publish config and language file
 php artisan vendor:publish --provider="Teckwei1993\Otp\OtpServiceProvider"
 ```
 
-This package publishes an `otp.php` file inside your applications's config folder which contains the settings for this package. Most of the variables are bound to environment variables, you may add Key-Value pair to the `.env` file in the Laravel application.
+This package publishes an `otp.php` file inside your application's config folder which contains the settings for this package. 
+Most of the variables are bound to environment variables.
+You can customize your configuration by adding relevant values in your `.env` file.
 
-```
+Here's an example:
+
+```dotenv
 OTP_FORMAT=numeric
 OTP_LENGTH=6
 OTP_SENSITIVE=false
@@ -59,46 +63,48 @@ OTP_DEMO=false
 
 ## Usage
 
-### Generate OTP
+### Generate an OTP
 
 ```php
-Otp::generate(string $identifier)
+Otp::generate(string $identifier);
 ```
 
 * `$identifier`: The identity that will be tied to the OTP.
 
-#### Sample
+#### Example
 
 ```php
 use OTP;
 
-// in controller
+// Inside your controller
 
 $password = Otp::generate('reg:name@domain.com');
 ```
 
-This will generate a OTP that will be valid for 15 minutes.
+This will generate an OTP that will be valid for 15 minutes.
 
-### Validate OTP
+### Validate an OTP
 
 ```php
-Otp::validate(string $identifier, string $password)
+Otp::validate(string $identifier, string $password);
 ```
 
 * `$identifier`: The identity that is tied to the OTP.
 * `$password`: The password tied to the identity.
 
-#### Sample
+#### Example
 
 ```php
 use OTP;
 
-// in controller
+// Inside your controller
 
 $result = Otp::validate('reg:name@domain.com', '123456');
 ```
 
 #### Responses
+
+Responses are objects that contain a `status` property (`bool`) and an `error` property (a constant-like `string`).
 
 **On Success**
 
@@ -126,7 +132,7 @@ $result = Otp::validate('reg:name@domain.com', '123456');
 }
 ```
 
-**Max attempt**
+**Max attempts exceeded**
 
 ```object
 {
@@ -135,9 +141,9 @@ $result = Otp::validate('reg:name@domain.com', '123456');
 }
 ```
 
-* Reached the maximum allowed attempts, default 10 times with each identifier
+* Reached the maximum allowed attempts, defaults to 10 attempts for each identifier
 
-### Validate OTP by Laravel Validation
+### Validate an OTP using Laravel Validation
 
 ```php
 // in a `FormRequest`
@@ -147,26 +153,25 @@ use Teckwei1993\Otp\Rules\OtpValidate;
 public function rules()
 {
     return [
-        'code' => ['required', new OtpValidate('change-email:name@domain.com')]
+        'code' => ['required', new OtpValidate($this->input('your_identifier'))]
     ];
 }
 
-// in a controller
+// Inside your controller
 
 $request->validate([
-    'code' => ['required', new OtpValidate('change-email:name@domain.com')]
+    'code' => ['required', new OtpValidate($request->input('your_identifier'))]
 ]);
 ```
 
-### Validate OTP by session id
+### Validate an OTP by session id
 
 ```php
-// Otp class
 
+// Inside a class
 $result = Otp::validate('123456');
 
-// in a `FormRequest`
-
+// In a `FormRequest`
 use Teckwei1993\Otp\Rules\OtpValidate;
 
 public function rules()
@@ -176,21 +181,24 @@ public function rules()
     ];
 }
 
-// in a controller
-
+// In a controller
 $request->validate([
     'code' => ['required', new OtpValidate()]
 ]);
 ```
 
-* The setting without identifier will automatically use the session ID as the default, and the OTP generation and verification will be completed in same session (browser's cookies).  
+* When the identifier is empty (`null`), the session ID will be used as the default, and the OTP generation and verification will be completed in same session (browser's cookies).  
 
 ## Advanced Usage
 
-### Generate OTP with options
+### Generate an OTP with options
 
 ```php
-$password = Otp::setLength(8)->setFormat('string')->setExpires(60)->setRepeated(false)->generate('identifier-key-here');
+$password = Otp::setLength(8)
+                ->setFormat('string')
+                ->setExpires(60)
+                ->setRepeated(false)
+                ->generate('identifier-key-here');
 
 // or array option
 
@@ -203,11 +211,11 @@ $password = Otp::generate('identifier-key-here', [
 ```
 
 * `setLength($length)`: The length of the password. Default: 6
-* `setFormat($format)`: The format option allows you to decide which generator implementation to be used when generating new passwords. Options: 'string','numeric','numeric-no-zero','customize'. Default: "numeric"
-* `setExpires($minutes)`: The expiry time of the password in minutes. Default: 15
+* `setFormat($format)`: The format option allows you to decide which generator implementation to be used when generating new passwords. Options: 'string','numeric','numeric-no-zero','customize'. Default: 'numeric'
+* `setExpires($minutes)`: OTP expiration, in minutes. Default: 15
 * `setRepeated($boolean)`: The repeated of the password. The previous password is valid when new password generated until either one password used or itself expired. Default: true
 
-### Generate OTP with customize password
+### Generate an OTP with a custom password
 
 ```php
 $password = Otp::setCustomize('12345678ABC@#$')->generate('identifier-key-here');
@@ -215,7 +223,7 @@ $password = Otp::setCustomize('12345678ABC@#$')->generate('identifier-key-here')
 
 * `setCustomize($string)`: Random letter from the customize string
 
-### Validate OTP with specific attempt times
+### Validate an OTP with custom attempts
 
 ```php
 $password = Otp::setAttempts(3)->validate('identifier-key-here', 'password-here');
@@ -223,16 +231,16 @@ $password = Otp::setAttempts(3)->validate('identifier-key-here', 'password-here'
 
 * `setAttempts($times)`: The number of incorrect password attempts. Default: 5
 
-### Validate OTP with case sensitive
+### Case-sensitive validation
 
 ```php
 $password = Otp::setSensitive(true)->generate('identifier-key-here');
 
-// validate
+// Validate
 
 $result = Otp::setSensitive(true)->validate('identifier-key-here', 'password-here');
 
-// in controller
+// Inside your controller
 
 use Teckwei1993\Otp\Rules\OtpValidate;
 
@@ -243,7 +251,7 @@ $request->validate([
 
 * `setSensitive($boolean)`: Requiring correct input of uppercase and lowercase letters. Default: true
 
-### Generate OTP with seperate password
+### Generate an OTP with a separate password (colon-separated)
 
 ```php
 $password = Otp::setLength([4,3,4])->setSeparator(':')->generate('identifier-key-here');
@@ -255,22 +263,22 @@ $password = Otp::setLength([4,3,4])->setSeparator(':')->generate('identifier-key
 ```
 
 * `setLength($array)`: The length of the password, use array to separate each length.
-* `setSeparator($string)`: The separator of the password. Default: "-"
+* `setSeparator($string)`: The separator of the password. Default: '-'
 
-### Validate OTP with extra data
+### Validate an OTP with extra data
 
 ```php
 $password = Otp::setData(['user_id' => auth()->id()])->generate('login-confirmation');
 ```
 
-* `setData($var)`: Allows you to get the extra data of OTP.
+* `setData($var)`: Allows you to get the extra data for the OTP.
 
 ```php
-// validate
+// Validate
 
 $result = Otp::setDisposable(false)->validate('login-confirmation', 'password-here');
 
-// in controller
+// Inside a controller
 
 use Teckwei1993\Otp\Rules\OtpValidate;
 
@@ -292,16 +300,16 @@ $request->validate([
 }
 ```
 
-* When you set disposable to `false`, you are able support different password with different extra data for different user in the same identifier key of the OTP.
+* When you set disposable to `false`, you are able to support different passwords with different extra data, across different users for the same identifier key of the OTP.
 
-### Validate OTP with skip using
+### Validate an OTP without using the password
 
 ```php
-// validate
+// Validate
 
 $result = Otp::setSkip(true)->validate('identifier-key-here', 'password-here');
 
-// in controller
+// Inside your controller
 
 use Teckwei1993\Otp\Rules\OtpValidate;
 
@@ -310,10 +318,10 @@ $request->validate([
 ]);
 ```
 
-* `setSkip($boolean)`: Skip using the password when validate, which means you can reuse the password again. Default: false
+* `setSkip($boolean)`: Skip using the password when validating, which means you can reuse the password again. Default: false
 * When there is an error response to the form request, it will skip using the password, but remember to `OTP::validate(...)`  in controller.
 
-### Delete OTP
+### Delete an OTP
 
 ```php
 Otp::forget('identifier-key-here');
@@ -321,13 +329,13 @@ Otp::forget('identifier-key-here');
 
 * Delete all password with this specific identifier
 
-### Delete specific password
+### Delete a specific password
 
 ```php
 Otp::forget('identifier-key-here', 'password-here');
 ```
 
-### Reset attempt times
+### Reset attempts
 
 ```php
 Otp::resetAttempt('identifier-key-here');
@@ -337,12 +345,12 @@ Otp::resetAttempt('identifier-key-here');
 
 Add the following Key-Value pair to the `.env` file in the Laravel application.
 
-```
+```dotenv
 OTP_DEMO=true
 ```
 
 * Demo mode for development purposes, no need to use real password to validate.
-* Default demo password: "1234", "123456", "12345678"
+* Default demo passwords: "1234", "123456", "12345678"
 
 ## Contribution
 
