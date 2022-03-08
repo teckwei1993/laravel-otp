@@ -94,7 +94,7 @@ class Otp
         }
     }
 
-    private function writeData(string $key, $value)
+    private function writeData(string $key, $value): bool
     {
         $expires = $this->expires;
         if (app()->version() >= '5.8') {
@@ -166,7 +166,7 @@ class Otp
         return (object)$response;
     }
 
-    public function forget(string $identifier = null, string $password = null)
+    public function forget(string $identifier = null, string $password = null): bool
     {
         if ($identifier === null) $identifier = session()->getId();
         if ($password !== null) {
@@ -183,12 +183,12 @@ class Otp
         return true;
     }
 
-    private function deleteData(string $key)
+    private function deleteData(string $key): bool
     {
         return Cache::forget($this->prefix . $key);
     }
 
-    public function resetAttempt(string $identifier = null)
+    public function resetAttempt(string $identifier = null): bool
     {
         if ($identifier === null) $identifier = session()->getId();
         $this->deleteData('_attempt_' . $identifier);
