@@ -36,7 +36,7 @@ class OtpServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'otp');
  
         $this->publishes([
-            __DIR__.'/../lang' => $this->app->langPath('vendor/otp'),
+            __DIR__.'/../resources/lang' => $this->app->langPath('vendor/otp'),
             __DIR__.'/../config/otp.php' => config_path('otp.php')
         ]);
     }
