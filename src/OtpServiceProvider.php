@@ -23,11 +23,21 @@ class OtpServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'otp');
+        if(app()->version() < "9.0"){
+            $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'otp');
 
+            $this->publishes([
+                __DIR__.'/../resources/lang' => resource_path('lang/vendor/otp'),
+                __DIR__.'/../config/otp.php' => config_path('otp.php')
+            ]);
+            return;
+        }
+
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'otp');
+ 
         $this->publishes([
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/otp'),
             __DIR__.'/../config/otp.php' => config_path('otp.php')
+            __DIR__.'/../lang' => $this->app->langPath('vendor/otp'),
         ]);
     }
 }
