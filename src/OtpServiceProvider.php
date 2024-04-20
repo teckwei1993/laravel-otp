@@ -3,6 +3,7 @@
 namespace Teckwei1993\Otp;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\Application;
 
 class OtpServiceProvider extends ServiceProvider
 {
@@ -23,7 +24,7 @@ class OtpServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if(app()->version() < "9.0"){
+        if (version_compare(Application::VERSION, '9.0.0', '<')) {
             $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'otp');
 
             $this->publishes([
