@@ -5,6 +5,7 @@ namespace Teckwei1993\Otp;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Str;
+use Illuminate\Foundation\Application;
 
 class Otp
 {
@@ -179,7 +180,7 @@ class Otp
     private function writeData(string $key, $value)
     {
         $expires = $this->expires;
-        if(app()->version() >= "5.8"){
+        if (version_compare(Application::VERSION, '5.8.0', '>=')) {
             $expires *= 60;
         }
         return Cache::put($this->prefix.$key, $value, $expires*3);
